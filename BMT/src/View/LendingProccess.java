@@ -16,6 +16,7 @@ public class LendingProccess extends JFrame implements ActionListener {
 
 	private JPanel contentPane;
 	private JTextField textField;
+	private String bid = null;
 
 	/**
 	 * Launch the application.
@@ -80,7 +81,7 @@ public class LendingProccess extends JFrame implements ActionListener {
 			}else if("キャンセル".equals(ae.getActionCommand())){
 				System.out.println("キャンセルボタンが押されました");
 				dispose();
-				new ReferenceWindow();
+				new ReferenceWindow(bid);
 			}
 		} catch (Exception ex) {
 			// TODO: handle exception
