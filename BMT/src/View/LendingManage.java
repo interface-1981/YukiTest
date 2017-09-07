@@ -3,12 +3,13 @@ package View;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 import javax.swing.ButtonGroup;
-import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -28,6 +29,17 @@ public class LendingManage extends JFrame implements ActionListener {
 	private JTable table;
 	private JTextField textField;
 	private JComboBox comboBox;
+	private int cnt = 0;
+	private DefaultTableModel model;
+	private String bid = null;
+	private int row = 0;
+	private int col = 0;
+	private JCheckBox CheckBox1;
+	private JCheckBox CheckBox2;
+	private JCheckBox CheckBox3;
+	private JCheckBox CheckBox4;
+	private String STATE = null;
+
 
 	//確認用メインプロセス
 		public static void main(String[] args) throws SQLException {
@@ -76,7 +88,7 @@ public class LendingManage extends JFrame implements ActionListener {
 
 		//テーブル配置
 		String[] header = {"BID", "タイトル", "著者名", "ジャンル", "貸出状態"};
-		DefaultTableModel model = new DefaultTableModel(header, 0);
+		model = new DefaultTableModel(header, 0);
 		table = new JTable(model){
 			public boolean isCellEditable(int row, int col){
 				return false;
@@ -98,36 +110,52 @@ public class LendingManage extends JFrame implements ActionListener {
 		scroll.setBounds(10, 130, 565,370);
 		contentPane.add(scroll);
 
-		comboBox = new JComboBox();
-		comboBox.setBounds(20, 61, 121, 26);
-		comboBox.setModel(new DefaultComboBoxModel(new String[] {"技術資料", "自己啓蒙", "ビジネス"}));
+
+		//コンボボックス配置
+		cnt = Action.CountVariety();
+		String[] comboData = new String[cnt+1];
+		ArrayList<String> Varieties = Action.GetVariety();
+		comboData[0] = "ジャンルを選択";
+		int x = 1;
+		int y = 0;
+		while (cnt > y){
+			comboData[x] = Varieties.get(y);
+			System.out.println("cnt:"+cnt+"y:"+y+"x:"+x);
+			System.out.println(comboData[y]);
+			x++;
+			y++;
+		}
+		comboBox = new JComboBox(comboData);
+		comboBox.setBounds(10, 61, 130, 26);
 		contentPane.add(comboBox);
 		comboBox.setBackground(Color.WHITE);
 
-		JCheckBox ChexBox1 = new JCheckBox("貸出中");
-		ChexBox1.setBounds(150, 58, 80, 32);
-		contentPane.add(ChexBox1);
 
-		JCheckBox ChexBox2 = new JCheckBox("貸出可能");
-		ChexBox2.setBounds(240, 61, 85, 26);
-		contentPane.add(ChexBox2);
+		CheckBox1 = new JCheckBox("貸出中");
+		CheckBox1.setBounds(150, 58, 65, 32);
+		contentPane.add(CheckBox1);
 
-		JCheckBox ChexBox3 = new JCheckBox("貸出予約");
-		ChexBox3.setBounds(300, 61, 87, 26);
-		contentPane.add(ChexBox3);
+		CheckBox2 = new JCheckBox("貸出可能");
+		CheckBox2.setBounds(215, 61, 78, 26);
+		contentPane.add(CheckBox2);
 
-		JCheckBox ChexBox4 = new JCheckBox("選択しない");
-		ChexBox4.setBounds(360, 61, 87, 26);
-		contentPane.add(ChexBox4);
+		CheckBox3 = new JCheckBox("貸出予約");
+		CheckBox3.setBounds(295, 61, 78, 26);
+		contentPane.add(CheckBox3);
+
+		CheckBox4 = new JCheckBox("選択しない");
+		CheckBox4.setBounds(375, 61, 90, 26);
+		contentPane.add(CheckBox4);
 
 		ButtonGroup group = new ButtonGroup();
-		group.add(ChexBox1);
-		group.add(ChexBox2);
-		group.add(ChexBox3);
+		group.add(CheckBox1);
+		group.add(CheckBox2);
+		group.add(CheckBox3);
+		group.add(CheckBox4);
 
 
 		textField = new JTextField();
-		textField.setText("キーワードを入力してください");
+		textField.setText("キーワードを入力");
 		textField.setBounds(39, 98, 387, 26);
 		contentPane.add(textField);
 		textField.setColumns(10);
@@ -144,7 +172,19 @@ public class LendingManage extends JFrame implements ActionListener {
 			i++;
 		}
 
+		//マウスリスナの追加
+		table.addMouseListener(new java.awt.event.MouseAdapter() {
+			public void mouseClicked(MouseEvent e) {
+				row = table.getSelectedRow();
+				col = table.getSelectedColumn();
+				bid = table.getValueAt(row, 0).toString();
+				System.out.println("選択行のBIDは" + bid + "です。");
+				System.out.println("行" + row + "::列" + col);
+			}
+		});
+
 	}
+
 
 	//各ボタン押下時の動作
 	public void actionPerformed(ActionEvent ae ) {
@@ -152,7 +192,7 @@ public class LendingManage extends JFrame implements ActionListener {
 		try {
 			if("参照".equals(ae.getActionCommand())) {
 				System.out.println("参照ボタンが押されました");
-				new ReferenceWindow();
+				new ReferenceWindow(bid);
 				dispose();
 			}else if("貸出/貸出予約".equals(ae.getActionCommand())){
 				System.out.println("貸出/貸出予約ボタンが押されました");
@@ -160,6 +200,39 @@ public class LendingManage extends JFrame implements ActionListener {
 			}else if("返却".equals(ae.getActionCommand())){
 				System.out.println("返却ボタンが押されました");
 				new ReturnProccess();
+			}else if ("検索".equals(ae.getActionCommand()))	{
+				System.out.println("検索ボタンが押されました");
+				model.setRowCount(0);
+				int i = 0;
+				String Keyword = textField.getText();
+				if (Keyword.equals("キーワードを入力")){
+					Keyword = "%";
+				}
+				String Variety = (String)comboBox.getSelectedItem();
+				if (Variety.equals("ジャンルを選択")){
+					Variety = "%";
+				}
+				String State = null;
+				if(CheckBox1.isSelected()){
+					State = "貸出中";
+					System.out.println(STATE);
+				}else if(CheckBox2.isSelected()){
+					State = "未貸出";
+					System.out.println(STATE);
+				}else if(CheckBox3.isSelected()){
+					State = "貸出予約";
+					System.out.println(STATE);
+				}else {
+					State = "%";
+					System.out.println(STATE);
+				}
+				ResultSet result = Action.Retrieval(Keyword, Variety, State);
+				while (	result.next()){
+					String[] tableData
+					= {result.getString("BID"), result.getString("Title"), result.getString("Author"), result.getString("Variety"), result.getString("State")};
+				model.insertRow(i,tableData);
+				i++;
+				}
 			}else if("戻る".equals(ae.getActionCommand())){
 				System.out.println("戻るボタンが押されました");
 				dispose();
