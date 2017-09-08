@@ -77,12 +77,14 @@ public class Action {
 		//貸出状態を変更
 		String sql = "UPDATE BOOK_LIST SET State = \"貸出中\" WHERE BID = " + BID;
 		//貸出期間の登録
-		String sql1 = "INSERT INTO RECORD (BID, LendingPeriod, Name, LoanDate) VALUES ( \"" + BID + "\", \""
-		+ LendingPeriod + "\", " + Name + "\", LoanDate = CURDATE()";
+		String sql1 = "INSERT INTO RECORD (BID, LendingPeriod, Name, LoanDate, DueDate) VALUES ( \"" + BID + "\", \""
+		+ LendingPeriod + "\", \"" + Name + "\", CURDATE() ,CURDATE() + INTERVAL " + LendingPeriod + " WEEK)";
 		PreparedStatement ps = con.prepareStatement(sql);
 		ps.executeUpdate();
 		PreparedStatement ps1 = con.prepareStatement(sql1);
 		ps1.executeUpdate();
+		System.out.println(sql);
+		System.out.println(sql1);
 	}
 
 
@@ -261,6 +263,24 @@ public class Action {
 		ResultSet result = ps.executeQuery();
 		result.next();
 		return result.getString("DueDate");
+	}
+
+	//BID検索（record、impressionテーブル）
+	public static ResultSet Review(String BID) throws SQLException{
+		String sql = "SELECT * FROM RECORD INNER JOIN IMPRESSION ON RECORD.RID = IMPRESSION.RID WHERE RECORD.BID = \"" + BID + "\"";
+		System.out.println(sql);
+		PreparedStatement ps = con.prepareStatement(sql);
+		ResultSet result = ps.executeQuery();
+		return result;
+	}
+
+	//BID検索（record、impressionテーブル）
+	public static ResultSet Review2(String RID) throws SQLException{
+		String sql = "SELECT * FROM RECORD INNER JOIN BOOK_LIST ON RECORD.BID = BOOK_LIST.BID WHERE RID = \"" + RID + "\"";
+		System.out.println(sql);
+		PreparedStatement ps = con.prepareStatement(sql);
+		ResultSet result = ps.executeQuery();
+		return result;
 	}
 
 }
