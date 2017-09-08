@@ -22,6 +22,9 @@ public class ReferenceWindow extends JFrame implements ActionListener {
 	private JPanel contentPane;
 	private JTable table;
 	private DefaultTableModel model;
+	private ResultSet result;
+	private String bid = null;
+	private int info = 1;
 
 	/**
 	 * Launch the application.
@@ -115,8 +118,9 @@ public class ReferenceWindow extends JFrame implements ActionListener {
 		contentPane.add(Button3);
 		Button3.addActionListener(this);
 
-		
-		ResultSet result = Action.LendingRecord(BID);
+
+		bid = BID;
+		result = Action.LendingRecord(BID);
 		int i = 0;
 		while(result.next()){
 			String DueDate = Action.CalcReturnDate(result.getString("RID"), result.getString("LendingPeriod"));
@@ -152,14 +156,14 @@ public class ReferenceWindow extends JFrame implements ActionListener {
 		try {
 			if("書評を確認する".equals(ae.getActionCommand())) {
 				System.out.println("書評を確認するボタンが押されました");
-				new ReviewWindow();
+				new ReviewWindow(bid);
 			}else if("キャンセル".equals(ae.getActionCommand())){
 				System.out.println("キャンセルボタンが押されました");
 				dispose();
 				new LendingManage();
 			}else if("貸出/貸出予約する".equals(ae.getActionCommand())){
 				System.out.println("貸出/貸出予約するボタンが押されました");
-				new LendingProccess();
+				new LendingProccess(info, bid);
 				dispose();
 			}
 		} catch (Exception ex) {

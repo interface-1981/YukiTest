@@ -39,6 +39,7 @@ public class LendingManage extends JFrame implements ActionListener {
 	private JCheckBox CheckBox3;
 	private JCheckBox CheckBox4;
 	private String STATE = null;
+	private int info = 0;
 
 
 	//確認用メインプロセス
@@ -56,6 +57,8 @@ public class LendingManage extends JFrame implements ActionListener {
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		super.setVisible(true);
+
+
 
 		//データベースへの接続
 		Action.Connect();
@@ -172,6 +175,7 @@ public class LendingManage extends JFrame implements ActionListener {
 			i++;
 		}
 
+
 		//マウスリスナの追加
 		table.addMouseListener(new java.awt.event.MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
@@ -196,7 +200,8 @@ public class LendingManage extends JFrame implements ActionListener {
 				dispose();
 			}else if("貸出/貸出予約".equals(ae.getActionCommand())){
 				System.out.println("貸出/貸出予約ボタンが押されました");
-				new LendingProccess();
+				new LendingProccess(info, bid);
+				dispose();
 			}else if("返却".equals(ae.getActionCommand())){
 				System.out.println("返却ボタンが押されました");
 				new ReturnProccess();
