@@ -73,7 +73,7 @@ public class ManageWindow extends JFrame implements ActionListener{
 	contentPane.add(Button2);
 	Button2.addActionListener(this);
 
-	JButton Button3 = new JButton("delete");
+	JButton Button3 = new JButton("削除");
 	Button3.setBounds(405, 20, 140, 40);
 	contentPane.add(Button3);
 	Button3.addActionListener(this);
@@ -83,7 +83,7 @@ public class ManageWindow extends JFrame implements ActionListener{
 	contentPane.add(Button4);
 	Button4.addActionListener(this);
 
-	JButton Button5 = new JButton("もどる");
+	JButton Button5 = new JButton("戻る");
 	Button5.setBounds(22, 520, 108, 31);
 	contentPane.add(Button5);
 	Button5.addActionListener(this);
@@ -172,12 +172,12 @@ public class ManageWindow extends JFrame implements ActionListener{
 				new RegistorWindow();
 			}else if("更新".equals(ae.getActionCommand())){
 				System.out.println("更新ボタンが押されました");
-				String[] Info = Action.Display();
+				String[] Info = Action.Display(bid);
 				new UpdateWindow(Info[0],Info[1], Info[2], Info[3], Info[4], Info[5], Info[6]);
 				dispose();
 			}else if("削除".equals(ae.getActionCommand())){
 				System.out.println("削除ボタンが押されました");
-				String[] Info = Action.Display();
+				String[] Info = Action.Display(bid);
 				new DeleateVerify(Info[0], Info[1]);
 				dispose();
 			}else if("検索".equals(ae.getActionCommand())){
