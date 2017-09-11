@@ -29,6 +29,11 @@ public class LendingManage extends JFrame implements ActionListener {
 	private JTextField textField;
 	private JComboBox comboBox;
 	private int cnt = 0;
+	private DefaultTableModel model;
+	private JCheckBox CheckBox1;
+	private JCheckBox CheckBox2;
+	private JCheckBox CheckBox3;
+	private JCheckBox CheckBox4;
 
 	//確認用メインプロセス
 		public static void main(String[] args) throws SQLException {
@@ -77,7 +82,7 @@ public class LendingManage extends JFrame implements ActionListener {
 
 		//テーブル配置
 		String[] header = {"BID", "タイトル", "著者名", "ジャンル", "貸出状態"};
-		DefaultTableModel model = new DefaultTableModel(header, 0);
+		model = new DefaultTableModel(header, 0);
 		table = new JTable(model){
 			public boolean isCellEditable(int row, int col){
 				return false;
@@ -117,21 +122,21 @@ public class LendingManage extends JFrame implements ActionListener {
 		comboBox.setBounds(10, 61, 121, 26);
 		contentPane.add(comboBox);
 		comboBox.setBackground(Color.WHITE);
-		
 
-		JCheckBox CheckBox1 = new JCheckBox("貸出中");
+
+		CheckBox1 = new JCheckBox("貸出中");
 		CheckBox1.setBounds(135, 60, 65, 26);
 		contentPane.add(CheckBox1);
 
-		JCheckBox CheckBox2 = new JCheckBox("貸出可能");
+		CheckBox2 = new JCheckBox("貸出可能");
 		CheckBox2.setBounds(200, 60, 80, 26);
 		contentPane.add(CheckBox2);
 
-		JCheckBox CheckBox3 = new JCheckBox("貸出予約");
+		CheckBox3 = new JCheckBox("貸出予約");
 		CheckBox3.setBounds(280, 61, 85, 26);
 		contentPane.add(CheckBox3);
 
-		JCheckBox CheckBox4 = new JCheckBox("選択しない");
+		CheckBox4 = new JCheckBox("選択しない");
 		CheckBox4.setBounds(365, 61, 95, 26);
 		contentPane.add(CheckBox4);
 
@@ -143,7 +148,7 @@ public class LendingManage extends JFrame implements ActionListener {
 
 
 		textField = new JTextField();
-		textField.setText("キーワードを入力してください");
+		textField.setText("キーワードを入力");
 		textField.setBounds(39, 98, 387, 26);
 		contentPane.add(textField);
 		textField.setColumns(10);
@@ -180,6 +185,33 @@ public class LendingManage extends JFrame implements ActionListener {
 				System.out.println("戻るボタンが押されました");
 				dispose();
 				new Top();
+			}else if("検索".equals(ae.getActionCommand())){
+				System.out.println("検索ボタンが押されました");
+				model.setRowCount(0);
+				int i = 0;
+				String Keyword = textField.getText();
+				if (Keyword.equals("キーワードを入力")){
+					Keyword = "%";
+				}
+				String Variety = (String)comboBox.getSelectedItem();
+				if (Variety.equals("ジャンルを選択")){
+					Variety = "%";
+				}
+				String State = "%";
+				if (CheckBox1.isSelected()){
+					State = "貸出中";
+				}else if (CheckBox2.isSelected()){
+					State = "未貸出";
+				}else if (CheckBox3.isSelected()){
+					State = "貸出予約";
+				}
+				ResultSet result = Action.Retrieval(Keyword, Variety, State);
+				while (	result.next()){
+					String[] tableData
+					= {result.getString("BID"), result.getString("Title"), result.getString("Author"), result.getString("Variety"), result.getString("State")};
+				model.insertRow(i,tableData);
+				i++;
+				}
 			}
 		} catch (Exception ex) {
 			// TODO: handle exception
