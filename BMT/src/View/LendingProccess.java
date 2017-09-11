@@ -24,6 +24,7 @@ public class LendingProccess extends JFrame implements ActionListener {
 	private String rid = null;
 	private JComboBox comboBox;
 	private String LoanPeriod = null;
+	private int st = 0;
 
 	/**
 	 * Launch the application.
@@ -84,6 +85,17 @@ public class LendingProccess extends JFrame implements ActionListener {
 		comboBox.setModel(new DefaultComboBoxModel(new String[] {"借用期間を選択してください", "1週間", "2週間", "3週間", "4週間"}));
 		comboBox.setBounds(115, 129, 214, 29);
 		contentPane.add(comboBox);
+
+		//対象図書のステータス判定（未貸出:0/未貸出（貸出予約あり）:1/貸出中:2/貸出中（貸出予約あり）:3）
+		if ( result[7].equals("未貸出")){
+			st = 0;
+		}else if ( result[7].equals("未貸出（貸出予約あり）")){
+			st = 1;
+		}else if ( result[7].equals("貸出中")){
+			st = 2;
+		}else if ( result[7].equals("貸出中（貸出予約あり）")){
+			st = 3;
+		}
 	}
 
 	//各ボタン押下時の動作
@@ -105,7 +117,7 @@ public class LendingProccess extends JFrame implements ActionListener {
 					LoanPeriod = "4";
 				}
 				String Name = textField.getText();
-				Action.Rental(bid, LoanPeriod, Name);
+				Action.Rental(bid, LoanPeriod, Name, st);
 				dispose();
 				if (x == 0){
 					new LendingManage();
