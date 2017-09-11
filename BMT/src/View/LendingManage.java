@@ -133,19 +133,19 @@ public class LendingManage extends JFrame implements ActionListener {
 
 
 		CheckBox1 = new JCheckBox("貸出中");
-		CheckBox1.setBounds(135, 60, 65, 26);
+		CheckBox1.setBounds(145, 60, 65, 26);
 		contentPane.add(CheckBox1);
 
 		CheckBox2 = new JCheckBox("貸出可能");
-		CheckBox2.setBounds(200, 60, 80, 26);
+		CheckBox2.setBounds(210, 60, 80, 26);
 		contentPane.add(CheckBox2);
 
 		CheckBox3 = new JCheckBox("貸出予約");
-		CheckBox3.setBounds(280, 61, 85, 26);
+		CheckBox3.setBounds(290, 61, 85, 26);
 		contentPane.add(CheckBox3);
 
 		CheckBox4 = new JCheckBox("選択しない");
-		CheckBox4.setBounds(365, 61, 95, 26);
+		CheckBox4.setBounds(375, 61, 95, 26);
 		contentPane.add(CheckBox4);
 
 		ButtonGroup group = new ButtonGroup();
