@@ -155,7 +155,8 @@ public class Action {
 	//検索処理
 	public static ResultSet Retrieval(String Keyword, String Variety, String State) throws SQLException{
 		//Keywordが半角英数字のみの場合
-		if (Keyword == "a"){
+		System.out.println(Keyword);
+		if (Keyword.equals("2009")){
 			String sql = "SELECT * FROM BOOK_LIST WHERE (Title LIKE \"%" + Keyword + "%\" OR Author LIKE \"%" + Keyword
 					+ "%\" OR Variety LIKE \"%" + Keyword + "%\" OR State LIKE \"%" + Keyword + "%\" OR ReleaseDate "
 					+ "LIKE \"%" + Keyword + "%\" OR Company LIKE  \"%" + Keyword + "%\" OR Version LIKE  \"%" + Keyword

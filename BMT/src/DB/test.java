@@ -1,80 +1,198 @@
 package DB;
-
+//-*- mode:java; encoding:utf-8 -*-
+// vim:set fileencoding=utf-8:
+//@homepage@
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.EventQueue;
+import java.awt.Rectangle;
 
-import javax.swing.JComboBox;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.WindowConstants;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumn;
 
-public class test extends JFrame implements ActionListener{
+public final class test extends JPanel {
+    private test() {
+        super(new BorderLayout());
 
-  JComboBox startCombo;
-  JComboBox endCombo;
-  JLabel label;
+        RowDataModel model = new RowDataModel();
+        model.addRowData(new RowData("Name 1", "comment..."));
+        model.addRowData(new RowData("Name 2", "Test"));
+        model.addRowData(new RowData("Name d", "ee"));
+        model.addRowData(new RowData("Name c", "Test cc"));
+        model.addRowData(new RowData("Name b", "Test bb"));
+        model.addRowData(new RowData("Name a", "ff"));
+        model.addRowData(new RowData("Name 0", "Test aa"));
 
-  public static void main(String[] args){
-    test frame = new test();
+        JTable table = new JTable(model);
+//         //TEST:
+//         JTable table = new JTable(model) {
+//             protected final Color evenColor = new Color(240, 240, 255);
+//             @Override public Component prepareRenderer(TableCellRenderer tcr, int row, int column) {
+//                 Component c = super.prepareRenderer(tcr, row, column);
+//                 if (isRowSelected(row)) {
+//                     c.setForeground(getSelectionForeground());
+//                     c.setBackground(getSelectionBackground());
+//                 } else {
+//                     c.setForeground(getForeground());
+//                     c.setBackground(row % 2 == 0 ? evenColor : getBackground());
+//                 }
+//                 return c;
+//             }
+//         };
 
-    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    frame.setBounds(10, 10, 300, 200);
-    frame.setTitle("タイトル");
-    frame.setVisible(true);
-  }
+        StripeTableRenderer renderer = new StripeTableRenderer();
+        table.setDefaultRenderer(Object.class, renderer);
+        table.setDefaultRenderer(Integer.class, renderer);
 
-  test(){
-    String[] startTime = {"08:00","09:00","10:00","11:00",
-                          "12:00","13:00","14:00","15:00",
-                          "16:00","17:00","18:00","19:00"};
+        table.setShowGrid(false);
+        //table.setShowHorizontalLines(false);
+        //table.setShowVerticalLines(false);
 
-    String[] endTime = {"08:00","09:00","10:00","11:00",
-                          "12:00","13:00","14:00","15:00",
-                          "16:00","17:00","18:00","19:00"};
+        TableColumn col = table.getColumnModel().getColumn(0);
+        col.setMinWidth(60);
+        col.setMaxWidth(60);
+        col.setResizable(false);
 
-    startCombo = new JComboBox(startTime);
-    startCombo.setPreferredSize(new Dimension(80, 30));
-
-    startCombo.addActionListener(this);
-
-    endCombo = new JComboBox(endTime);
-    endCombo.setPreferredSize(new Dimension(80, 30));
-
-    endCombo.addActionListener(this);
-
-    JPanel p = new JPanel();
-    p.add(new JLabel("start:"));
-    p.add(startCombo);
-    p.add(new JLabel("  end:"));
-    p.add(endCombo);
-
-    label = new JLabel();
-    JPanel labelPanel = new JPanel();
-    labelPanel.add(label);
-
-    getContentPane().add(p, BorderLayout.CENTER);
-    getContentPane().add(labelPanel, BorderLayout.PAGE_END);
-  }
-
-  public void actionPerformed(ActionEvent e) {
-    String start;
-    String end;
-
-    if (startCombo.getSelectedIndex() == -1){
-        start = "(not select)";
-    }else{
-        start = (String)startCombo.getSelectedItem();
+        table.setAutoCreateRowSorter(true);
+        table.setFillsViewportHeight(true);
+        table.setComponentPopupMenu(new TablePopupMenu());
+        add(new JScrollPane(table));
+        setPreferredSize(new Dimension(320, 240));
     }
-
-    if (endCombo.getSelectedIndex() == -1){
-        end = "(not select)";
-    }else{
-        end = (String)endCombo.getSelectedItem();
+    public static void main(String... args) {
+        EventQueue.invokeLater(new Runnable() {
+            @Override public void run() {
+                createAndShowGUI();
+            }
+        });
     }
-
-    label.setText("START:" + start + ", END:" + end);
-  }
+    public static void createAndShowGUI() {
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (ClassNotFoundException | InstantiationException
+               | IllegalAccessException | UnsupportedLookAndFeelException ex) {
+            ex.printStackTrace();
+        }
+        JFrame frame = new JFrame("@title@");
+        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        frame.getContentPane().add(new test());
+        frame.pack();
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
+    }
 }
 
+class StripeTableRenderer extends DefaultTableCellRenderer {
+    private static final Color EVEN_COLOR = new Color(240, 240, 255);
+    @Override public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+        super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+        if (isSelected) {
+            setForeground(table.getSelectionForeground());
+            setBackground(table.getSelectionBackground());
+        } else {
+            setForeground(table.getForeground());
+            setBackground(row % 2 == 0 ? EVEN_COLOR : table.getBackground());
+        }
+        setHorizontalAlignment(value instanceof Number ? RIGHT : LEFT);
+        return this;
+    }
+}
+
+class RowDataModel extends DefaultTableModel {
+    private static final ColumnContext[] COLUMN_ARRAY = {
+        new ColumnContext("No.",     Integer.class, false),
+        new ColumnContext("Name",    String.class,  true),
+        new ColumnContext("Comment", String.class,  true)
+    };
+    private int number;
+    public void addRowData(RowData t) {
+        Object[] obj = {number, t.getName(), t.getComment()};
+        super.addRow(obj);
+        number++;
+    }
+    @Override public boolean isCellEditable(int row, int col) {
+        return COLUMN_ARRAY[col].isEditable;
+    }
+    @Override public Class<?> getColumnClass(int column) {
+        return COLUMN_ARRAY[column].columnClass;
+    }
+    @Override public int getColumnCount() {
+        return COLUMN_ARRAY.length;
+    }
+    @Override public String getColumnName(int column) {
+        return COLUMN_ARRAY[column].columnName;
+    }
+    private static class ColumnContext {
+        public final String  columnName;
+        public final Class   columnClass;
+        public final boolean isEditable;
+        protected ColumnContext(String columnName, Class columnClass, boolean isEditable) {
+            this.columnName = columnName;
+            this.columnClass = columnClass;
+            this.isEditable = isEditable;
+        }
+    }
+}
+
+class RowData {
+    private String name;
+    private String comment;
+    protected RowData(String name, String comment) {
+        this.name = name;
+        this.comment = comment;
+    }
+    public void setName(String str) {
+        name = str;
+    }
+    public void setComment(String str) {
+        comment = str;
+    }
+    public String getName() {
+        return name;
+    }
+    public String getComment() {
+        return comment;
+    }
+}
+
+class TablePopupMenu extends JPopupMenu {
+    private final JMenuItem delete;
+    protected TablePopupMenu() {
+        super();
+        add("add").addActionListener(e -> {
+            JTable table = (JTable) getInvoker();
+            RowDataModel model = (RowDataModel) table.getModel();
+            model.addRowData(new RowData("New row", ""));
+            Rectangle r = table.getCellRect(model.getRowCount() - 1, 0, true);
+            table.scrollRectToVisible(r);
+        });
+        addSeparator();
+        delete = add("delete");
+        delete.addActionListener(e -> {
+            JTable table = (JTable) getInvoker();
+            DefaultTableModel model = (DefaultTableModel) table.getModel();
+            int[] selection = table.getSelectedRows();
+            for (int i = selection.length - 1; i >= 0; i--) {
+                model.removeRow(table.convertRowIndexToModel(selection[i]));
+            }
+        });
+    }
+    @Override public void show(Component c, int x, int y) {
+        if (c instanceof JTable) {
+            delete.setEnabled(((JTable) c).getSelectedRowCount() > 0);
+            super.show(c, x, y);
+        }
+    }
+}

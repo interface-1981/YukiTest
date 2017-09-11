@@ -41,7 +41,6 @@ public class LendingManage extends JFrame implements ActionListener {
 	private String STATE = null;
 	private int info = 0;
 
-
 	//確認用メインプロセス
 		public static void main(String[] args) throws SQLException {
 		LendingManage frame = new LendingManage();
@@ -113,7 +112,6 @@ public class LendingManage extends JFrame implements ActionListener {
 		scroll.setBounds(10, 130, 565,370);
 		contentPane.add(scroll);
 
-
 		//コンボボックス配置
 		cnt = Action.CountVariety();
 		String[] comboData = new String[cnt+1];
@@ -135,19 +133,19 @@ public class LendingManage extends JFrame implements ActionListener {
 
 
 		CheckBox1 = new JCheckBox("貸出中");
-		CheckBox1.setBounds(150, 58, 65, 32);
+		CheckBox1.setBounds(135, 60, 65, 26);
 		contentPane.add(CheckBox1);
 
 		CheckBox2 = new JCheckBox("貸出可能");
-		CheckBox2.setBounds(215, 61, 78, 26);
+		CheckBox2.setBounds(200, 60, 80, 26);
 		contentPane.add(CheckBox2);
 
 		CheckBox3 = new JCheckBox("貸出予約");
-		CheckBox3.setBounds(295, 61, 78, 26);
+		CheckBox3.setBounds(280, 61, 85, 26);
 		contentPane.add(CheckBox3);
 
 		CheckBox4 = new JCheckBox("選択しない");
-		CheckBox4.setBounds(375, 61, 90, 26);
+		CheckBox4.setBounds(365, 61, 95, 26);
 		contentPane.add(CheckBox4);
 
 		ButtonGroup group = new ButtonGroup();
@@ -242,6 +240,33 @@ public class LendingManage extends JFrame implements ActionListener {
 				System.out.println("戻るボタンが押されました");
 				dispose();
 				new Top();
+			}else if("検索".equals(ae.getActionCommand())){
+				System.out.println("検索ボタンが押されました");
+				model.setRowCount(0);
+				int i = 0;
+				String Keyword = textField.getText();
+				if (Keyword.equals("キーワードを入力")){
+					Keyword = "%";
+				}
+				String Variety = (String)comboBox.getSelectedItem();
+				if (Variety.equals("ジャンルを選択")){
+					Variety = "%";
+				}
+				String State = "%";
+				if (CheckBox1.isSelected()){
+					State = "貸出中";
+				}else if (CheckBox2.isSelected()){
+					State = "未貸出";
+				}else if (CheckBox3.isSelected()){
+					State = "貸出予約";
+				}
+				ResultSet result = Action.Retrieval(Keyword, Variety, State);
+				while (	result.next()){
+					String[] tableData
+					= {result.getString("BID"), result.getString("Title"), result.getString("Author"), result.getString("Variety"), result.getString("State")};
+				model.insertRow(i,tableData);
+				i++;
+				}
 			}
 		} catch (Exception ex) {
 			// TODO: handle exception
