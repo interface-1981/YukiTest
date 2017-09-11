@@ -3,6 +3,7 @@ package View;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -30,10 +31,15 @@ public class LendingManage extends JFrame implements ActionListener {
 	private JComboBox comboBox;
 	private int cnt = 0;
 	private DefaultTableModel model;
+	private String bid = null;
+	private int row = 0;
+	private int col = 0;
 	private JCheckBox CheckBox1;
 	private JCheckBox CheckBox2;
 	private JCheckBox CheckBox3;
 	private JCheckBox CheckBox4;
+	private String STATE = null;
+	private int info = 0;
 
 	//確認用メインプロセス
 		public static void main(String[] args) throws SQLException {
@@ -50,6 +56,8 @@ public class LendingManage extends JFrame implements ActionListener {
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		super.setVisible(true);
+
+
 
 		//データベースへの接続
 		Action.Connect();
@@ -119,7 +127,7 @@ public class LendingManage extends JFrame implements ActionListener {
 			y++;
 		}
 		comboBox = new JComboBox(comboData);
-		comboBox.setBounds(10, 61, 121, 26);
+		comboBox.setBounds(10, 61, 130, 26);
 		contentPane.add(comboBox);
 		comboBox.setBackground(Color.WHITE);
 
@@ -165,7 +173,20 @@ public class LendingManage extends JFrame implements ActionListener {
 			i++;
 		}
 
+
+		//マウスリスナの追加
+		table.addMouseListener(new java.awt.event.MouseAdapter() {
+			public void mouseClicked(MouseEvent e) {
+				row = table.getSelectedRow();
+				col = table.getSelectedColumn();
+				bid = table.getValueAt(row, 0).toString();
+				System.out.println("選択行のBIDは" + bid + "です。");
+				System.out.println("行" + row + "::列" + col);
+			}
+		});
+
 	}
+
 
 	//各ボタン押下時の動作
 	public void actionPerformed(ActionEvent ae ) {
@@ -173,14 +194,48 @@ public class LendingManage extends JFrame implements ActionListener {
 		try {
 			if("参照".equals(ae.getActionCommand())) {
 				System.out.println("参照ボタンが押されました");
-				new ReferenceWindow();
+				new ReferenceWindow(bid);
 				dispose();
 			}else if("貸出/貸出予約".equals(ae.getActionCommand())){
 				System.out.println("貸出/貸出予約ボタンが押されました");
-				new LendingProccess();
+				new LendingProccess(info, bid);
+				dispose();
 			}else if("返却".equals(ae.getActionCommand())){
 				System.out.println("返却ボタンが押されました");
 				new ReturnProccess();
+			}else if ("検索".equals(ae.getActionCommand()))	{
+				System.out.println("検索ボタンが押されました");
+				model.setRowCount(0);
+				int i = 0;
+				String Keyword = textField.getText();
+				if (Keyword.equals("キーワードを入力")){
+					Keyword = "%";
+				}
+				String Variety = (String)comboBox.getSelectedItem();
+				if (Variety.equals("ジャンルを選択")){
+					Variety = "%";
+				}
+				String State = null;
+				if(CheckBox1.isSelected()){
+					State = "貸出中";
+					System.out.println(STATE);
+				}else if(CheckBox2.isSelected()){
+					State = "未貸出";
+					System.out.println(STATE);
+				}else if(CheckBox3.isSelected()){
+					State = "貸出予約";
+					System.out.println(STATE);
+				}else {
+					State = "%";
+					System.out.println(STATE);
+				}
+				ResultSet result = Action.Retrieval(Keyword, Variety, State);
+				while (	result.next()){
+					String[] tableData
+					= {result.getString("BID"), result.getString("Title"), result.getString("Author"), result.getString("Variety"), result.getString("State")};
+				model.insertRow(i,tableData);
+				i++;
+				}
 			}else if("戻る".equals(ae.getActionCommand())){
 				System.out.println("戻るボタンが押されました");
 				dispose();

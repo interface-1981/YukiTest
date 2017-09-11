@@ -73,7 +73,7 @@ public class ManageWindow extends JFrame implements ActionListener{
 	contentPane.add(Button2);
 	Button2.addActionListener(this);
 
-	JButton Button3 = new JButton("削除");
+	JButton Button3 = new JButton("delete");
 	Button3.setBounds(405, 20, 140, 40);
 	contentPane.add(Button3);
 	Button3.addActionListener(this);
@@ -83,7 +83,7 @@ public class ManageWindow extends JFrame implements ActionListener{
 	contentPane.add(Button4);
 	Button4.addActionListener(this);
 
-	JButton Button5 = new JButton("戻る");
+	JButton Button5 = new JButton("もどる");
 	Button5.setBounds(22, 520, 108, 31);
 	contentPane.add(Button5);
 	Button5.addActionListener(this);
