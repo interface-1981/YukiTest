@@ -6,9 +6,9 @@ import java.awt.event.ActionListener;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 import javax.swing.ButtonGroup;
-import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -28,6 +28,7 @@ public class LendingManage extends JFrame implements ActionListener {
 	private JTable table;
 	private JTextField textField;
 	private JComboBox comboBox;
+	private int cnt = 0;
 
 	//確認用メインプロセス
 		public static void main(String[] args) throws SQLException {
@@ -98,32 +99,47 @@ public class LendingManage extends JFrame implements ActionListener {
 		scroll.setBounds(10, 130, 565,370);
 		contentPane.add(scroll);
 
-		comboBox = new JComboBox();
-		comboBox.setBounds(20, 61, 121, 26);
-		comboBox.setModel(new DefaultComboBoxModel(new String[] {"技術資料", "自己啓蒙", "ビジネス"}));
+		//コンボボックス配置
+		cnt = Action.CountVariety();
+		String[] comboData = new String[cnt+1];
+		ArrayList<String> Varieties = Action.GetVariety();
+		comboData[0] = "ジャンルを選択";
+		int x = 1;
+		int y = 0;
+		while (cnt > y){
+			comboData[x] = Varieties.get(y);
+			System.out.println("cnt:"+cnt+"y:"+y+"x:"+x);
+			System.out.println(comboData[y]);
+			x++;
+			y++;
+		}
+		comboBox = new JComboBox(comboData);
+		comboBox.setBounds(10, 61, 121, 26);
 		contentPane.add(comboBox);
 		comboBox.setBackground(Color.WHITE);
+		
 
-		JCheckBox ChexBox1 = new JCheckBox("貸出中");
-		ChexBox1.setBounds(150, 58, 80, 32);
-		contentPane.add(ChexBox1);
+		JCheckBox CheckBox1 = new JCheckBox("貸出中");
+		CheckBox1.setBounds(135, 60, 65, 26);
+		contentPane.add(CheckBox1);
 
-		JCheckBox ChexBox2 = new JCheckBox("貸出可能");
-		ChexBox2.setBounds(240, 61, 85, 26);
-		contentPane.add(ChexBox2);
+		JCheckBox CheckBox2 = new JCheckBox("貸出可能");
+		CheckBox2.setBounds(200, 60, 80, 26);
+		contentPane.add(CheckBox2);
 
-		JCheckBox ChexBox3 = new JCheckBox("貸出予約");
-		ChexBox3.setBounds(300, 61, 87, 26);
-		contentPane.add(ChexBox3);
+		JCheckBox CheckBox3 = new JCheckBox("貸出予約");
+		CheckBox3.setBounds(280, 61, 85, 26);
+		contentPane.add(CheckBox3);
 
-		JCheckBox ChexBox4 = new JCheckBox("選択しない");
-		ChexBox4.setBounds(360, 61, 87, 26);
-		contentPane.add(ChexBox4);
+		JCheckBox CheckBox4 = new JCheckBox("選択しない");
+		CheckBox4.setBounds(365, 61, 95, 26);
+		contentPane.add(CheckBox4);
 
 		ButtonGroup group = new ButtonGroup();
-		group.add(ChexBox1);
-		group.add(ChexBox2);
-		group.add(ChexBox3);
+		group.add(CheckBox1);
+		group.add(CheckBox2);
+		group.add(CheckBox3);
+		group.add(CheckBox4);
 
 
 		textField = new JTextField();
