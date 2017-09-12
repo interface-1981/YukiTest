@@ -10,18 +10,22 @@ import javax.swing.JPanel;
 import javax.swing.JTextPane;
 import javax.swing.border.EmptyBorder;
 
+import DB.Action;
+
 public class ReturnProccess extends JFrame implements ActionListener {
 
 
 	private JPanel contentPane;
+	private JTextPane textPane;
+	private String bid = null;
 
 	public static void main(String[] args) {
-		ReturnProccess frame = new ReturnProccess();
+		ReturnProccess frame = new ReturnProccess("bid");
 		frame.setVisible(true);
 	}
 
 
-	public ReturnProccess() {
+	public ReturnProccess(String BID) {
 		super("図書返却処理画面");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 450, 350);
@@ -30,8 +34,9 @@ public class ReturnProccess extends JFrame implements ActionListener {
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		super.setVisible(true);
+		bid = BID;
 
-		JTextPane textPane = new JTextPane();
+		textPane = new JTextPane();
 		textPane.setBounds(25, 65, 384, 161);
 		contentPane.add(textPane);
 
@@ -53,16 +58,22 @@ public class ReturnProccess extends JFrame implements ActionListener {
 		contentPane.add(Button2);
 		Button2.addActionListener(this);
 	}
-	
+
 	//各ボタン押下時の動作
 	public void actionPerformed(ActionEvent ae ) {
 
 		try {
 			if("キャンセル".equals(ae.getActionCommand())) {
 				System.out.println("キャンセルボタンが押されました");
-				dispose();
+				System.out.println(bid);
+				//dispose();
 			}else if("返却".equals(ae.getActionCommand())){
 				System.out.println("返却ボタンが押されました");
+				System.out.println(bid);
+				String RID = Action.Display(bid)[0];
+				System.out.println(RID + bid + textPane.getText());
+				Action.Return(RID, bid, textPane.getText());
+				dispose();
 			}
 		} catch (Exception ex) {
 			// TODO: handle exception

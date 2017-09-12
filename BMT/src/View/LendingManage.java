@@ -51,7 +51,7 @@ public class LendingManage extends JFrame implements ActionListener {
 	public LendingManage() throws SQLException {
 		super("図書貸出管理画面");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 600, 600);
+		setBounds(100, 100, 705, 600);
 		contentPane = new JPanel();
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
@@ -78,7 +78,7 @@ public class LendingManage extends JFrame implements ActionListener {
 		Button3.addActionListener(this);
 
 		JButton Button4 = new JButton("検索");
-		Button4.setBounds(480, 65, 87, 56);
+		Button4.setBounds(540, 65, 87, 56);
 		contentPane.add(Button4);
 		Button4.addActionListener(this);
 
@@ -104,12 +104,12 @@ public class LendingManage extends JFrame implements ActionListener {
 		columnModel.getColumn(1).setPreferredWidth(300);
 		columnModel.getColumn(2).setPreferredWidth(110);
 		columnModel.getColumn(3).setPreferredWidth(110);
-		columnModel.getColumn(4).setPreferredWidth(60);
+		columnModel.getColumn(4).setPreferredWidth(107);
 
 
 
 		JScrollPane scroll = new JScrollPane(table);
-		scroll.setBounds(10, 130, 565,370);
+		scroll.setBounds(10, 130, 670,370);
 		contentPane.add(scroll);
 
 		//コンボボックス配置
@@ -127,25 +127,25 @@ public class LendingManage extends JFrame implements ActionListener {
 			y++;
 		}
 		comboBox = new JComboBox(comboData);
-		comboBox.setBounds(10, 61, 130, 26);
+		comboBox.setBounds(40, 61, 130, 26);
 		contentPane.add(comboBox);
 		comboBox.setBackground(Color.WHITE);
 
 
 		CheckBox1 = new JCheckBox("貸出中");
-		CheckBox1.setBounds(145, 60, 65, 26);
+		CheckBox1.setBounds(175, 60, 65, 26);
 		contentPane.add(CheckBox1);
 
 		CheckBox2 = new JCheckBox("貸出可能");
-		CheckBox2.setBounds(210, 60, 80, 26);
+		CheckBox2.setBounds(250, 60, 80, 26);
 		contentPane.add(CheckBox2);
 
 		CheckBox3 = new JCheckBox("貸出予約");
-		CheckBox3.setBounds(290, 61, 85, 26);
+		CheckBox3.setBounds(340, 61, 85, 26);
 		contentPane.add(CheckBox3);
 
 		CheckBox4 = new JCheckBox("選択しない");
-		CheckBox4.setBounds(375, 61, 95, 26);
+		CheckBox4.setBounds(435, 61, 95, 26);
 		contentPane.add(CheckBox4);
 
 		ButtonGroup group = new ButtonGroup();
@@ -157,7 +157,7 @@ public class LendingManage extends JFrame implements ActionListener {
 
 		textField = new JTextField();
 		textField.setText("キーワードを入力");
-		textField.setBounds(39, 98, 387, 26);
+		textField.setBounds(40, 98, 470, 26);
 		contentPane.add(textField);
 		textField.setColumns(10);
 
@@ -202,7 +202,7 @@ public class LendingManage extends JFrame implements ActionListener {
 				dispose();
 			}else if("返却".equals(ae.getActionCommand())){
 				System.out.println("返却ボタンが押されました");
-				new ReturnProccess();
+				new ReturnProccess(bid);
 			}else if ("検索".equals(ae.getActionCommand()))	{
 				System.out.println("検索ボタンが押されました");
 				model.setRowCount(0);
