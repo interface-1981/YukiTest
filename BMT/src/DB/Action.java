@@ -18,6 +18,8 @@ public class Action {
 	public static String [] Info = null;
 	private static String sql = null;
 	private static String sql1 = null;
+	private static String sql2 = null;
+	private static String sql3 = null;
 
 
 	//DBへの接続
@@ -63,101 +65,117 @@ public class Action {
 
 	//返却時の処理
 	public static void Return(String RID, String BID, String Review) throws SQLException{
-		sql = "UPDATE RECORD SET ReturnDate  RID = CURDATE() WHERE = " + RID;
-		sql1 = "UPDATE BOOK_LIST SET State = \"未貸出\" WHERE RID = " + BID;
+		sql = null;
+		sql1 = null;
+		sql2 = null;
+		sql3 = null;
+		System.out.println("返却処理を実施します");
+		sql = "UPDATE RECORD SET ReturnDate = CURDATE() WHERE RID = " + RID;
+		System.out.println("返却日の登録：" + sql);
+		String cnt = CountReserve(BID);
+		System.out.println("貸出予約数は"+cnt);
+		if (cnt.equals("0")){
+			sql1 = "UPDATE BOOK_LIST SET State = \"未貸出\" WHERE BID = " + BID;
+		}else if (cnt.equals("1")){
+			sql1 = "UPDATE BOOK_LIST SET State = \"貸出中\" WHERE BID = " + BID;
+			String rid = getRID(BID);
+			sql2 = "UPDATE RECORD SET LoanDate = CURDATE() WHERE RID = " + rid;
+			PreparedStatement ps2 = con.prepareStatement(sql2);
+			ps2.executeUpdate();
+			System.out.println("自動貸し出し日の登録：" + sql2);
+		}else {
+			sql1 = "UPDATE BOOK_LIST SET State = \"貸出中(貸出予約あり)\" WHERE BID = \"" + BID + "\"";
+			String rid = getRID(BID);
+			sql2 = "UPDATE RECORD SET LoanDate = CURDATE() WHERE RID = \"" + rid + "\"";
+			PreparedStatement ps2 = con.prepareStatement(sql2);
+			ps2.executeUpdate();
+			System.out.println("自動貸し出し日の登録：" + sql2);
+		}
+		System.out.println("貸出状態の変更：" + sql1);
 		PreparedStatement ps = con.prepareStatement(sql);
 		ps.executeUpdate();
+		ps.close();
 		PreparedStatement ps1 = con.prepareStatement(sql1);
 		ps1.executeUpdate();
-		String sql2 = "INSERT INTO IMPRESSION";
+		ps1.close();
+		sql3 = "INSERT INTO IMPRESSION (RID, BID, Review) VALUES (\"" + RID + "\", \"" + BID + "\", \"" + Review + "\" )";
+		System.out.println("impressionテーブルへの登録" + sql3);
+		PreparedStatement ps3 = con.prepareStatement(sql3);
+		ps3.executeUpdate();
+		ps3.close();
+		System.out.println("返却処理を実施しました");
 	}
 
 	//貸出時の処理
 	public static void Rental(String BID, String LendingPeriod, String Name, int status) throws SQLException{
-		//貸出状態を変更
+		sql = null;
+		sql1 = null;
+		//貸出状態を変更(BOOK_LISTへの更新処理)
+			//未貸出の図書について
 		if (status == 0){
 			sql = "UPDATE BOOK_LIST SET State = \"貸出中\" WHERE BID = " + BID;
-		}else if (status == 1){
+		}
+			//未貸出(貸出予約あり)の図書について
+		else if (status == 1){
+			String cnt = CountReserve(BID);
+			if (cnt.equals("1")){
+				sql = "UPDATE BOOK_LIST SET State = \"貸出中\" WHERE BID = " + BID;
+			}else{
+				sql = "UPDATE BOOK_LIST SET State = \"貸出中（貸出予約あり）\" WHERE BID = " + BID;
+			}
+		}
+			//貸出中の図書について
+		else if (status == 2){
 			sql = "UPDATE BOOK_LIST SET State = \"貸出中（貸出予約あり）\" WHERE BID = " + BID;
 		}
-		//貸出期間の登録
+			//貸出中(貸出予約あり)の図書について
+		else if (status == 3){
+			sql = "UPDATE BOOK_LIST SET State = \"貸出中（貸出予約あり）\" WHERE BID = " + BID;
+		}
+		//貸出期間の登録(RECORDへの追加処理)
 		sql1 = "INSERT INTO RECORD (BID, LendingPeriod, Name, LoanDate, DueDate) VALUES ( \"" + BID + "\", \""
 		+ LendingPeriod + "\", \"" + Name + "\", CURDATE() ,CURDATE() + INTERVAL " + LendingPeriod + " WEEK)";
+
+		System.out.println(sql);
+		System.out.println(sql1);
 		PreparedStatement ps = con.prepareStatement(sql);
 		ps.executeUpdate();
+		ps.close();
 		PreparedStatement ps1 = con.prepareStatement(sql1);
 		ps1.executeUpdate();
+		ps1.close();
 		System.out.println(sql);
 		System.out.println(sql1);
 	}
 
-
-	/*
-	//ジャンルのみ又はキーワードのみ又は貸出状態のみの検索
-	public static void Retrieval(String[] Keyword){
-		//ジャンルのみ又は貸出状態のみの場合
-		if (Keyword[0].equals("State") || Keyword[0].equals("Variety")){
-			String sql = "SELECT * FROM BOOK_LIST WHERE " + Keyword[0] + " = \"" + Keyword[1] + "\"";
-			System.out.println(sql);
-		}
-		//キーワードのみの検索の場合
-		else if (Keyword[0].equals("Keyword")){
-			//Keyword が 半角英数字のみの場合
-			if (Keyword[1] == "a" ){
-				String sql = "SELECT * FROM BOOK_LIST WHERE Title LIKE \"%" + Keyword[1] + "%\" OR Author LIKE \"%" + Keyword[1]
-						+ "%\" OR Variety LIKE \"%" + Keyword[1] + "%\" OR State LIKE \"%" + Keyword[1] + "%\" OR ReleaseDate "
-						+ "LIKE \"%" + Keyword[1] + "%\" OR Company LIKE  \"%" + Keyword[1] + "%\" OR Version LIKE  \"%" + Keyword[1] + "%\"";
-				System.out.println(sql);
-			}
-			//Keyword に全角文字が含まれる場合
-			else{
-				String sql = "SELECT * FROM BOOK_LIST WHERE Title LIKE \"%" + Keyword[1] + "%\" OR Author LIKE \"%" + Keyword[1]
-						+ "%\" OR Variety LIKE \"%" + Keyword[1] + "%\" OR State LIKE \"%" + Keyword[1] + "%\" OR Company"
-						+ " LIKE  \"%" + Keyword[1] + "%\" OR Version LIKE \"%" + Keyword[1] + "%\"";
-				System.out.println(sql);
-			}
-		}
+	//貸出予約数チェック
+	public static String CountReserve(String BID) throws SQLException {
+		String sql = "SELECT COUNT(*) AS CNTRESERVE FROM RECORD WHERE BID = \"" + BID + "\" AND LoanDate IS NULL";
+		System.out.println(sql);
+		PreparedStatement ps = con.prepareStatement(sql);
+		ResultSet result = ps.executeQuery();
+		result.next();
+		System.out.println("貸出予約数を取得しました");
+		System.out.println(result.getString("cntreserve"));
+		return result.getString("cntreserve");
 	}
 
-
-	public static void Retrieval(String[] Keyword1, String[] Keyword2){
-		if (Keyword1[0].equals("Keyword") || Keyword2[0].equals("Keyword")){
-			if (Keyword1[0].equals("Keyword")){
-				//半角英数字のみの場合
-				if (Keyword1[1] == "a"){
-					String sql = "SELECT * FROM BOOK_LIST WHERE Title LIKE \"%" + Keyword1[1] + "%\" OR Author LIKE \"%" + Keyword1[1]
-							+ "%\" OR Variety LIKE \"%" + Keyword1[1] + "%\" OR State LIKE \"%" + Keyword1[1] + "%\" OR ReleaseDate "
-							+ "LIKE \"%" + Keyword1[1] + "%\" OR Company LIKE  \"%" + Keyword1[1] + "%\" OR Version LIKE  \"%" + Keyword1[1] + "%\"";
-					System.out.println(sql);
-				}
-				//全角文字が含まれている場合
-				else {
-					String sql = "SELECT * FROM BOOK_LIST WHERE Title LIKE \"%" + Keyword1[1] + "%\" OR Author LIKE \"%" + Keyword1[1]
-							+ "%\" OR Variety LIKE \"%" + Keyword1[1] + "%\" OR State LIKE \"%" + Keyword1[1] + "%\" OR Company"
-							+ " LIKE  \"%" + Keyword1[1] + "%\" OR Version LIKE \"%" + Keyword1[1] + "%\"";
-					System.out.println(sql);
-				}
-			}else if (Keyword2[1].equals("Keyword")){
-				//半角英数字のみの場合
-				if (Keyword2[1] == "a"){
-					String sql = "SELECT * FROM BOOK_LIST WHERE Title LIKE \"%" + Keyword2[1] + "%\" OR Author LIKE \"%" + Keyword2[1]
-							+ "%\" OR Variety LIKE \"%" + Keyword2[1] + "%\" OR State LIKE \"%" + Keyword2[1] + "%\" OR ReleaseDate "
-							+ "LIKE \"%" + Keyword2[1] + "%\" OR Company LIKE  \"%" + Keyword2[1] + "%\" OR Version LIKE  \"%" + Keyword2[1] + "%\"";
-					System.out.println(sql);
-				}
-				//全角文字が含まれている場合
-				else {
-					String sql = "SELECT * FROM BOOK_LIST WHERE Title LIKE \"%" + Keyword2[1] + "%\" OR Author LIKE \"%" + Keyword2[1]
-							+ "%\" OR Variety LIKE \"%" + Keyword2[1] + "%\" OR State LIKE \"%" + Keyword2[1] + "%\" OR Company"
-							+ " LIKE  \"%" + Keyword2[1] + "%\" OR Version LIKE \"%" + Keyword2[1] + "%\"";
-					System.out.println(sql);
-				}
-			}
-		}
-	}*/
+	//対象図書の貸出予約をしているRIDを取得
+	public static String getRID(String BID) throws SQLException {
+		String sql = "SELECT * FROM RECORD WHERE BID = \"" + BID + "\" AND LoanDate IS NULL";
+		PreparedStatement ps = con.prepareStatement(sql);
+		ResultSet result = ps.executeQuery();
+		result.next();
+		String RID = result.getString("RID");
+		System.out.println("RIDを取得しました");
+		result.close();
+		ps.close();
+		return RID;
+	}
 
 	//検索処理
 	public static ResultSet Retrieval(String Keyword, String Variety, String State) throws SQLException{
+		sql = null;
 		//Keywordが半角英数字のみの場合
 		System.out.println(Keyword);
 		if (Keyword.equals("2009")){
@@ -185,8 +203,8 @@ public class Action {
 	}
 
 	//BID検索表示
-
 	public static String[] Display(String BID) throws SQLException{
+		sql = null;
 		//String bid = ManageWindow.bid;
 		sql = "SELECT * FROM BOOK_LIST WHERE BID = \"" + BID + "\"";
 		//System.out.println("実行するSQL文は"+sql);
@@ -200,6 +218,7 @@ public class Action {
 
 	//データの削除
 	public static void Delete(String bid) throws SQLException{
+		sql = null;
 		sql = "DELETE FROM BOOK_LIST WHERE BID = " + bid;
 		PreparedStatement ps = con.prepareStatement(sql);
 		ps.executeUpdate();
@@ -209,6 +228,7 @@ public class Action {
 	//図書データの更新
 	public static void Update(String BID, String Title, String Author, String Variety, String Company, String Version,
 			String ReleaseDate) throws SQLException{
+		sql = null;
 		sql = "UPDATE BOOK_LIST SET Title = \"" + Title + "\", Author = \"" + Author + "\", Variety = \""
 			+ Variety + "\", Company = \"" + Company + "\", Version = \"" + Version + "\", ReleaseDate = \"" + ReleaseDate + "\""
 			+ " WHERE BID = \"" + BID + "\";";
@@ -219,6 +239,7 @@ public class Action {
 
 	//登録済みジャンルの取得
 	public static ArrayList GetVariety() throws SQLException{
+		sql = null;
 		sql = "SELECT Variety FROM BOOK_LIST GROUP BY Variety";
 		PreparedStatement ps = con.prepareStatement(sql);
 		ResultSet result = ps.executeQuery();
@@ -233,6 +254,7 @@ public class Action {
 
 	//登録済みジャンル数の取得
 	public static int CountVariety() throws SQLException{
+		sql = null;
 		int count = 0;
 		sql = "SELECT Variety FROM BOOK_LIST GROUP BY Variety";
 		PreparedStatement ps = con.prepareStatement(sql);
@@ -245,6 +267,7 @@ public class Action {
 
 	//貸出履歴の取得
 	public static ResultSet LendingRecord(String BID) throws SQLException{
+		sql = null;
 		sql = "SELECT * FROM RECORD WHERE BID = \"" + BID + "\"";
 		PreparedStatement ps = con.prepareStatement(sql);
 		ResultSet result = ps.executeQuery();
@@ -253,6 +276,7 @@ public class Action {
 
 	//返却予定日の計算
 	public static String CalcReturnDate(String RID, String LendingPeriod) throws SQLException{
+		sql = null;
 		sql = "SELECT LoanDate + INTERVAL "+ LendingPeriod + " WEEK as DueDate FROM RECORD WHERE RID = \"" + RID + "\"";
 		PreparedStatement ps = con.prepareStatement(sql);
 		//System.out.println(sql);
@@ -263,6 +287,7 @@ public class Action {
 
 	//BID検索（record、impressionテーブル）
 	public static ResultSet Review(String BID) throws SQLException{
+		sql = null;
 		sql = "SELECT * FROM RECORD INNER JOIN IMPRESSION ON RECORD.RID = IMPRESSION.RID WHERE RECORD.BID = \"" + BID + "\"";
 		System.out.println(sql);
 		PreparedStatement ps = con.prepareStatement(sql);
@@ -272,6 +297,7 @@ public class Action {
 
 	//BID検索（record、impressionテーブル）
 	public static ResultSet Review2(String RID) throws SQLException{
+		sql = null;
 		sql = "SELECT * FROM RECORD INNER JOIN BOOK_LIST ON RECORD.BID = BOOK_LIST.BID WHERE RID = \"" + RID + "\"";
 		System.out.println(sql);
 		PreparedStatement ps = con.prepareStatement(sql);

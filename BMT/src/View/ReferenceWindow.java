@@ -124,7 +124,7 @@ public class ReferenceWindow extends JFrame implements ActionListener {
 		int i = 0;
 		while(result.next()){
 			String DueDate = Action.CalcReturnDate(result.getString("RID"), result.getString("LendingPeriod"));
-			String[] tableDate = {result.getString("Name"), result.getString("LoanDate"), result.getString("LendingPeriod")+ "週間", DueDate};
+			String[] tableDate = {result.getString("Name"), result.getString("LoanDate"), result.getString("LendingPeriod")+ "週間", DueDate, result.getString("ReturnDate")};
 			model.insertRow(i,  tableDate);
 			i++;
 		}
