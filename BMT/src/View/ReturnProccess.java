@@ -70,9 +70,10 @@ public class ReturnProccess extends JFrame implements ActionListener {
 			}else if("返却".equals(ae.getActionCommand())){
 				System.out.println("返却ボタンが押されました");
 				System.out.println(bid);
-				String RID = Action.Display(bid)[0];
+				String RID = Action.getRID2(bid);
 				System.out.println(RID + bid + textPane.getText());
 				Action.Return(RID, bid, textPane.getText());
+				new LendingManage();
 				dispose();
 			}
 		} catch (Exception ex) {

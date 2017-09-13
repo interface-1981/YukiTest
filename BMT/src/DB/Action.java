@@ -133,8 +133,15 @@ public class Action {
 			sql = "UPDATE BOOK_LIST SET State = \"貸出中（貸出予約あり）\" WHERE BID = " + BID;
 		}
 		//貸出期間の登録(RECORDへの追加処理)
-		sql1 = "INSERT INTO RECORD (BID, LendingPeriod, Name, LoanDate, DueDate) VALUES ( \"" + BID + "\", \""
-		+ LendingPeriod + "\", \"" + Name + "\", CURDATE() ,CURDATE() + INTERVAL " + LendingPeriod + " WEEK)";
+		if (status == 0){
+			sql1 = "INSERT INTO RECORD (BID, LendingPeriod, Name, LoanDate, DueDate) VALUES ( \"" + BID + "\", \""
+					+ LendingPeriod + "\", \"" + Name + "\", CURDATE() ,CURDATE() + INTERVAL " + LendingPeriod + " WEEK)";
+		}else if (status == 1 || status == 2 || status == 3){
+			sql1 = "INSERT INTO RECORD (BID, LendingPeriod, Name, DueDate) VALUES ( \"" + BID + "\", \""
+					+ LendingPeriod + "\", \"" + Name + "\", CURDATE() + INTERVAL " + LendingPeriod + " WEEK)";
+		}else {
+			JOptionPane.showMessageDialog(null,"貸出状態が変だよ");
+		}
 
 		System.out.println(sql);
 		System.out.println(sql1);
@@ -168,6 +175,19 @@ public class Action {
 		result.next();
 		String RID = result.getString("RID");
 		System.out.println("RIDを取得しました");
+		result.close();
+		ps.close();
+		return RID;
+	}
+
+	//返却対象のRIDを取得
+	public static String getRID2(String BID) throws SQLException {
+		String sql = "SELECT * FROM RECORD WHERE BID = \"" + BID + "\" AND ReturnDate IS NULL";
+		PreparedStatement ps = con.prepareStatement(sql);
+		ResultSet result = ps.executeQuery();
+		result.next();
+		String RID = result.getString("RID");
+		System.out.println("RID:" + RID + " を取得しました");
 		result.close();
 		ps.close();
 		return RID;
