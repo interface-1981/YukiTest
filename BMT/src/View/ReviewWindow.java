@@ -44,6 +44,7 @@ public class ReviewWindow extends JFrame implements ActionListener{
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		super.setVisible(true);
+		String[] Info = Action.Display(BID);
 
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setBounds(12, 51, 560, 244);
@@ -64,8 +65,9 @@ public class ReviewWindow extends JFrame implements ActionListener{
 		contentPane.add(Button1);
 		Button1.addActionListener(this);
 
-		JLabel label = new JLabel("選択図書名を表示");
-		label.setBounds(216, 10, 161, 25);
+		JLabel label = new JLabel(Info[1]);
+		label.setBounds(50, 10, 460, 25);
+		label.setHorizontalAlignment(JLabel.CENTER);
 		contentPane.add(label);
 	}
 

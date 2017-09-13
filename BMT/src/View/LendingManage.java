@@ -51,7 +51,7 @@ public class LendingManage extends JFrame implements ActionListener {
 	public LendingManage() throws SQLException {
 		super("図書貸出管理画面");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 705, 600);
+		setBounds(100, 100, 725, 600);
 		contentPane = new JPanel();
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
@@ -104,12 +104,12 @@ public class LendingManage extends JFrame implements ActionListener {
 		columnModel.getColumn(1).setPreferredWidth(300);
 		columnModel.getColumn(2).setPreferredWidth(110);
 		columnModel.getColumn(3).setPreferredWidth(110);
-		columnModel.getColumn(4).setPreferredWidth(107);
+		columnModel.getColumn(4).setPreferredWidth(127);
 
 
 
 		JScrollPane scroll = new JScrollPane(table);
-		scroll.setBounds(10, 130, 670,370);
+		scroll.setBounds(10, 130, 690,370);
 		contentPane.add(scroll);
 
 		//コンボボックス配置
@@ -203,6 +203,7 @@ public class LendingManage extends JFrame implements ActionListener {
 			}else if("返却".equals(ae.getActionCommand())){
 				System.out.println("返却ボタンが押されました");
 				new ReturnProccess(bid);
+				dispose();
 			}else if ("検索".equals(ae.getActionCommand()))	{
 				System.out.println("検索ボタンが押されました");
 				model.setRowCount(0);
