@@ -1,56 +1,53 @@
 package Validate;
 
-import java.sql.Connection;
-
 import javax.swing.JOptionPane;
 
-public class ErrorDesision {
+public class ValidateErr {
 
-	private static final int max = 30;
-	static Connection con = null;
-
-
-	private static final String E1000 = "入力フィールドに文字列が入力されていません。入力フィールドに文字列を入力してください。";
-	private static final String E1010 = "入力フィールドに入力された文字数が {" + max + "文字}を超えています。";
-	private static final String E1020 = "入力フィールドに半角文字が含まれています。";
-	private static final String E1021 = "入力フィールドに全角文字が含まれています。";
-	private static final String E1030 = "更新対象のデータが見つかりません";
-	private static final String E1040 = "表示対象のデータが存在しません。";
-	private static final String E1050 = "対象図書が選択されていません。";
-	private static final String E1060 = "貸出期間が選択されていません。";
-
-	public static int getMax() {
-		return max;
-	}
-
-	public static String getE1000(){
-		return E1000;
-	}
-
-	public static String getE1010(){
-		return E1010;
-	}
-
-	public static String getE1020(){
-		return E1020;
-	}
-
-	public static String getE1030(){
-		return E1030;
-	}
-
-	public static String getE1040(){
-		return E1040;
-	}
+	private static int max = 0;
 
 
-	//更新対象選択チェック
-	public void chkSelected(String BID){
-		if ( BID == "null" || BID.equals(null)){
-			JOptionPane.showMessageDialog(null, E1030);
+	private static final String noBlankChk = "入力フィールドに文字列が入力されていません。入力フィールドに文字列を入力してください。";
+	private static final String noCharCntChk = "入力フィールドに入力された文字数が {" + max + "文字}を超えています。";
+	private static final String noDouble_byteCharChk = "入力フィールドに半角文字が含まれています。";
+	private static final String noSingle_byteCharChk = "入力フィールドに全角文字が含まれています。";
+	private static final String noUpdateDataTargetChk = "更新対象のデータが見つかりません";
+	private static final String noDisplayTargetChk = "表示対象のデータが存在しません。";
+	private static final String noSelectedBookChk = "対象図書が選択されていません。";
+	private static final String noSelectedLendingPeriodChk = "貸出期間が選択されていません。";
 
+
+	//空白チェック
+	public static boolean BlankChk(String text){
+		if ( text == null || text.length() == 0 ){
+			JOptionPane.showMessageDialog(null, noBlankChk);
+			return false;
 		}else {
-			System.out.println("aaa");
+			return true;
+		}
+	}
+
+	//更新対象選択有無チェック
+	public static Boolean SelectedBookChk(String BID){
+		//System.out.println("check start　"+BID);
+		if ( BID == null || BID.length() == 0){
+			JOptionPane.showMessageDialog(null, noSelectedBookChk);
+			//System.out.println("false");
+			return false;
+		}else {
+			//System.out.println("true");
+			return true;
+		}
+	}
+
+	//文字数チェック
+	public static Boolean CharCntChk(String text, int max){
+		ValidateErr.max = max;
+		if (text.length() > max ){
+			JOptionPane.showMessageDialog(null, noCharCntChk);
+			return false;
+		}else {
+			return true;
 		}
 	}
 

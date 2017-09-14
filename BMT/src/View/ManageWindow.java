@@ -20,6 +20,7 @@ import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.DefaultTableModel;
 
 import DB.Action;
+import Validate.ValidateErr;
 
 public class ManageWindow extends JFrame implements ActionListener{
 
@@ -159,6 +160,9 @@ public class ManageWindow extends JFrame implements ActionListener{
 		}
 	});
 
+	//bidの初期化
+	bid = null;
+
 }
 
 
@@ -172,9 +176,12 @@ public class ManageWindow extends JFrame implements ActionListener{
 				new RegistorWindow();
 			}else if("更新".equals(ae.getActionCommand())){
 				System.out.println("更新ボタンが押されました");
-				String[] Info = Action.Display(bid);
-				new UpdateWindow(Info[0],Info[1], Info[2], Info[3], Info[4], Info[5], Info[6]);
-				dispose();
+				System.out.println("bid ha:"+bid);
+				if(ValidateErr.SelectedBookChk(bid)){
+					String[] Info = Action.Display(bid);
+					new UpdateWindow(Info[0],Info[1], Info[2], Info[3], Info[4], Info[5], Info[6]);
+					dispose();
+				}
 			}else if("削除".equals(ae.getActionCommand())){
 				System.out.println("削除ボタンが押されました");
 				String[] Info = Action.Display(bid);
