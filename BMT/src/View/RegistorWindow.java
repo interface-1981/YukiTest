@@ -10,6 +10,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import DB.Action;
+import Validate.ValidateErr;
 
 public class RegistorWindow extends JFrame implements ActionListener {
 
@@ -122,7 +123,7 @@ public class RegistorWindow extends JFrame implements ActionListener {
 
 		JButton Button1 = new JButton("キャンセル");
 		Button1.setBounds(126, 296, 130, 42);
-		contentPane.add(Button1);		
+		contentPane.add(Button1);
 		Button1.addActionListener(this);
 
 		JButton Button2 = new JButton("登録");
@@ -149,10 +150,17 @@ public class RegistorWindow extends JFrame implements ActionListener {
 				Company = textField4.getText();
 				Version = textField5.getText();
 				ReleaseDate = textField6.getText();
-				System.out.println(Title + Author + Variety + Company + Version + ReleaseDate );
-				Action.Registor(Title, Author, Variety, Company, Version, ReleaseDate);
-				new ManageWindow();
-				dispose();}
+				if (ValidateErr.BlankChk(Title) && ValidateErr.BlankChk(Author) && ValidateErr.BlankChk(Variety)
+						&& ValidateErr.BlankChk(Company) && ValidateErr.BlankChk(Version) && ValidateErr.BlankChk(ReleaseDate)){
+					if (ValidateErr.CharCntChk(Title, 30) && ValidateErr.CharCntChk(Author, 20) && ValidateErr.CharCntChk(Variety, 20)
+							&& ValidateErr.CharCntChk(Company, 20) && ValidateErr.CharCntChk(Version, 2) ){
+						System.out.println(Title + Author + Variety + Company + Version + ReleaseDate );
+						Action.Registor(Title, Author, Variety, Company, Version, ReleaseDate);
+						new ManageWindow();
+						dispose();
+					}
+				}
+			}
 		} catch (Exception ex) {
 			// TODO: handle exception
 			System.out.println(ex.getMessage());
