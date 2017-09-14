@@ -15,6 +15,7 @@ public class ValidateErr {
 	private static final String noDisplayTargetChk = "表示対象のデータが存在しません。";
 	private static final String noSelectedBookChk = "対象図書が選択されていません。";
 	private static final String noSelectedLendingPeriodChk = "貸出期間が選択されていません。";
+	private static final String noCharContentChk = "入力内容に誤りがあります。";
 
 
 	//空白チェック
