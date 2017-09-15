@@ -14,6 +14,7 @@ import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
 import DB.Action;
+import Validate.ValidateErr;
 
 public class LendingProccess extends JFrame implements ActionListener {
 
@@ -117,12 +118,18 @@ public class LendingProccess extends JFrame implements ActionListener {
 					LoanPeriod = "4";
 				}
 				String Name = textField.getText();
-				Action.Rental(bid, LoanPeriod, Name, st);
-				dispose();
-				if (x == 0){
-					new LendingManage();
-				}else if (x == 1){
-					new ReferenceWindow(bid);
+				if (ValidateErr.PeriodChk(LoanPeriod)){
+					if (ValidateErr.BlankChk(Name)){
+						if (ValidateErr.CharCntChk(Name,20)){
+							Action.Rental(bid, LoanPeriod, Name, st);
+							dispose();
+							if (x == 0){
+								new LendingManage();
+							}else if (x == 1){
+								new ReferenceWindow(bid);
+							}
+						}
+					}
 				}
 			}else if("キャンセル".equals(ae.getActionCommand())){
 				System.out.println("キャンセルボタンが押されました");

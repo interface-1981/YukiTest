@@ -13,6 +13,7 @@ import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
 import DB.Action;
+import Validate.ValidateErr;
 
 public class UpdateWindow extends JFrame implements ActionListener{
 
@@ -166,10 +167,28 @@ public class UpdateWindow extends JFrame implements ActionListener{
 				Company = textField4.getText();
 				Version = textField5.getText();
 				ReleaseDate = textField6.getText();
-				System.out.println(Title + Author + Variety + Company + Version + ReleaseDate );
-				Action.Update(bid, Title, Author, Variety, Company, Version, ReleaseDate);
-				new ManageWindow();
-				dispose();}
+				//空白チェック
+				if (ValidateErr.BlankChk(Title) && ValidateErr.BlankChk(Author) && ValidateErr.BlankChk(Variety)
+						&& ValidateErr.BlankChk(Company) && ValidateErr.BlankChk(Version) && ValidateErr.BlankChk(ReleaseDate)){
+					//文字数チェック
+					if (ValidateErr.CharCntChk(Title, 30) && ValidateErr.CharCntChk(Author, 20) && ValidateErr.CharCntChk(Variety, 20)
+							&& ValidateErr.CharCntChk(Company, 20) && ValidateErr.CharCntChk(Version, 2) && ValidateErr.CharCntChk(ReleaseDate, 10)){
+						//入力文字内容チェック（版数、発行日：半角文字のみ有効）
+						if (ValidateErr.Single_byteCharChk(Version) && ValidateErr.Single_byteCharChk(ReleaseDate)){
+							//日付チェック
+							if (ValidateErr.DateChk(ReleaseDate)){
+								//数値チェック
+								if (ValidateErr.ValueChk(Version)){
+									System.out.println(Title + Author + Variety + Company + Version + ReleaseDate );
+									Action.Update(bid, Title, Author, Variety, Company, Version, ReleaseDate);
+									new ManageWindow();
+									dispose();
+								}
+							}
+						}
+					}
+				}
+			}
 		} catch (Exception ex) {
 			// TODO: handle exception
 			System.out.println(ex.getMessage());

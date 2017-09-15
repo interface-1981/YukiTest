@@ -184,9 +184,11 @@ public class ManageWindow extends JFrame implements ActionListener{
 				}
 			}else if("削除".equals(ae.getActionCommand())){
 				System.out.println("削除ボタンが押されました");
-				String[] Info = Action.Display(bid);
-				new DeleateVerify(Info[0], Info[1]);
-				dispose();
+				if(ValidateErr.SelectedBookChk(bid)){
+					String[] Info = Action.Display(bid);
+					new DeleateVerify(Info[0], Info[1]);
+					dispose();
+				}
 			}else if("検索".equals(ae.getActionCommand())){
 				System.out.println("検索ボタンが押されました");
 				model.setRowCount(0);

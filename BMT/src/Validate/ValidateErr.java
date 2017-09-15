@@ -1,22 +1,28 @@
 package Validate;
 
+import java.text.DateFormat;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import javax.swing.JOptionPane;
 
 public class ValidateErr {
 
-	private static int max = 0;
 
 
 	private static final String noBlankChk = "入力フィールドに文字列が入力されていません。入力フィールドに文字列を入力してください。";
-	private static final String noCharCntChk = "入力フィールドに入力された文字数が {" + max + "文字}を超えています。";
-	private static final String noDouble_byteCharChk = "入力フィールドに半角文字が含まれています。";
-	private static final String noSingle_byteCharChk = "入力フィールドに全角文字が含まれています。";
+	private static final String noCharCntChk1 = "入力フィールドに入力された文字数が {";
+	private static final String noCharCntChk2 = "文字}を超えています。";
+	private static final String noSingle_byteCharChk = "入力フィールドに半角文字が含まれています。";
+	private static final String noDouble_byteCharChk = "入力フィールドに全角文字が含まれています。";
 	private static final String noUpdateDataTargetChk = "更新対象のデータが見つかりません";
 	private static final String noDisplayTargetChk = "表示対象のデータが存在しません。";
 	private static final String noSelectedBookChk = "対象図書が選択されていません。";
 	private static final String noSelectedLendingPeriodChk = "貸出期間が選択されていません。";
 	private static final String noCharContentChk = "入力内容に誤りがあります。";
-
+	private static final String noDateChk = "入力した日付に誤りがあります。";
+	private static final String noValueChk = "入力した値にアルファベットが含まれています。";
+	private static final String noPeriodChk = "貸出期間が選択されていません。";
 
 	//空白チェック
 	public static boolean BlankChk(String text){
@@ -43,9 +49,77 @@ public class ValidateErr {
 
 	//文字数チェック
 	public static Boolean CharCntChk(String text, int max){
-		ValidateErr.max = max;
 		if (text.length() > max ){
-			JOptionPane.showMessageDialog(null, noCharCntChk);
+			JOptionPane.showMessageDialog(null, noCharCntChk1 + max + noCharCntChk2);
+			return false;
+		}else {
+			return true;
+		}
+	}
+
+	//日付チェック
+	public static Boolean DateChk(String strDate){
+		strDate = strDate.replace('-', '/');
+		DateFormat format = DateFormat.getDateInstance();
+		//日付/時刻解析を厳密に行うかどうかを設定する。
+		format.setLenient(false);
+		try {
+			format.parse(strDate);
+			return true;
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, noDateChk);
+			return false;
+		}
+	}
+
+	//半角文字存在チェック
+	public static Boolean Single_byteCharChk(String str) {
+		if ( str.length() == (str.length() * 1) ){
+			return true;
+		}else {
+			JOptionPane.showMessageDialog(null, noSingle_byteCharChk);
+			return false;
+		}
+	}
+
+	//全角文字存在チェック
+	public static Boolean Double_byteCharChk(String str){
+		int i = str.length();
+		int x = 0;
+		String[] strArray = str.split("");
+		Boolean hantei = true;
+		while ( x < i) {
+			if ( strArray[x].getBytes().length == 2 || strArray[x].getBytes().length == 3){
+				hantei = false;
+			}else if ( strArray[x].getBytes().length == 1){
+			}
+			x++;
+		}
+		if ( hantei == false){
+			JOptionPane.showMessageDialog(null, noDouble_byteCharChk);
+			return false;
+		}else {
+			return true;
+		}
+	}
+
+	//半角数値チェック
+	public static Boolean ValueChk(String str){
+		System.out.println(str);
+		Pattern p = Pattern.compile("^[0-9]*$");
+		Matcher m = p.matcher(str);
+		if( m.find() ){
+			return true;
+		}else {
+			JOptionPane.showMessageDialog(null, noValueChk);
+			return false;
+		}
+	}
+
+	//貸出期間選択チェック
+	public static Boolean PeriodChk(String LoanPeriod){
+		if (LoanPeriod.equals("0")){
+			JOptionPane.showMessageDialog(null, noPeriodChk);
 			return false;
 		}else {
 			return true;
