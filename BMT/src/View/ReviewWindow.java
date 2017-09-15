@@ -53,7 +53,15 @@ public class ReviewWindow extends JFrame implements ActionListener{
 		JTextPane textPane = new JTextPane();
 		result = Action.Review(BID);
 		while(result.next()){
-			Review = Review + "\n" + result.getString("Review") + "\n" + result.getString("ReturnDate") + "  " + result.getString("Name") + "\n" + partition;
+			if (result.getString("Review").equals("") || result.getString("Review") == null){
+
+			}else {
+				Review = Review + "\n" + result.getString("Review") + "\n" + result.getString("ReturnDate") + "  " + result.getString("Name") + "\n" + partition;
+			}
+		}
+
+		if ( Review.equals("***********************************************")){
+			Review = "書評はありません。";
 		}
 		textPane.setText(Review);
 		//JTextPane textPane = new JTextPane();

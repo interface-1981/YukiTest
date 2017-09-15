@@ -66,7 +66,8 @@ public class ReturnProccess extends JFrame implements ActionListener {
 			if("キャンセル".equals(ae.getActionCommand())) {
 				System.out.println("キャンセルボタンが押されました");
 				System.out.println(bid);
-				//dispose();
+				new LendingManage();
+				dispose();
 			}else if("返却".equals(ae.getActionCommand())){
 				System.out.println("返却ボタンが押されました");
 				System.out.println(bid);

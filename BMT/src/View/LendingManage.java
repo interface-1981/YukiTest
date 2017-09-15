@@ -22,6 +22,7 @@ import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.DefaultTableModel;
 
 import DB.Action;
+import Validate.ValidateErr;
 
 public class LendingManage extends JFrame implements ActionListener {
 
@@ -194,16 +195,22 @@ public class LendingManage extends JFrame implements ActionListener {
 		try {
 			if("参照".equals(ae.getActionCommand())) {
 				System.out.println("参照ボタンが押されました");
-				new ReferenceWindow(bid);
-				dispose();
+				if (ValidateErr.SelectedBookChk(bid)){
+					new ReferenceWindow(bid);
+					dispose();
+				}
 			}else if("貸出/貸出予約".equals(ae.getActionCommand())){
 				System.out.println("貸出/貸出予約ボタンが押されました");
-				new LendingProccess(info, bid);
-				dispose();
+				if (ValidateErr.SelectedBookChk(bid)){
+					new LendingProccess(info, bid);
+					dispose();
+				}
 			}else if("返却".equals(ae.getActionCommand())){
-				System.out.println("返却ボタンが押されました");
-				new ReturnProccess(bid);
-				dispose();
+				if (ValidateErr.SelectedBookChk(bid)){
+					System.out.println("返却ボタンが押されました");
+					new ReturnProccess(bid);
+					dispose();
+				}
 			}else if ("検索".equals(ae.getActionCommand()))	{
 				System.out.println("検索ボタンが押されました");
 				model.setRowCount(0);
